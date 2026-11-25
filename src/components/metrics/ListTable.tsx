@@ -10,6 +10,12 @@ import { formatLongNumber } from '@/lib/format';
 
 const ITEM_SIZE = 30;
 
+function formatPercent(n?: number) {
+  if (n === undefined || Number.isNaN(n)) return '';
+  // Rows that round to 0% are confusing next to a non-zero count
+  return n > 0 && n < 1 ? '<1%' : `${n.toFixed(0)}%`;
+}
+
 interface ListData {
   label: string;
   count: number;
@@ -114,7 +120,7 @@ const AnimatedRow = ({
   const ySpring = useSpring(0, { stiffness: 170, damping: 26 });
   const widthSpring = useSpring(0, { stiffness: 170, damping: 26 });
   const yText = useTransform(ySpring, n => (formatCount ? formatCount(n) : formatLongNumber(n)));
-  const widthText = useTransform(widthSpring, n => `${n?.toFixed?.(0)}%`);
+  const widthText = useTransform(widthSpring, n => formatPercent(n));
 
   useEffect(() => {
     if (animate) {
@@ -162,7 +168,7 @@ const AnimatedRow = ({
           color="muted"
           paddingLeft="3"
         >
-          <AnimatedDiv>{animate ? widthText : `${percent?.toFixed?.(0)}%`}</AnimatedDiv>
+          <AnimatedDiv>{animate ? widthText : formatPercent(percent)}</AnimatedDiv>
         </Row>
       )}
     </Grid>
